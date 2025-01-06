@@ -28,7 +28,7 @@ fi
 
 # Install dependencies
 echo "\033[1mInstalling dependencies...\033[0m"
-if ! pnpm install; then
+if ! pnpm install --no-frozen-lockfile; then
     echo "\033[1;31mFailed to install dependencies.\033[0m"
     exit 1
 fi
@@ -42,7 +42,7 @@ fi
 
 # Start project
 echo "\033[1mStarting project...\033[0m"
-if ! pnpm start; then
+if ! pnpm start --characters="./characters/trump.character.json"; then
     echo "\033[1;31mFailed to start project.\033[0m"
     exit 1
 fi
