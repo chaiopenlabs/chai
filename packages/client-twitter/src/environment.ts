@@ -4,19 +4,18 @@ export const DEFAULT_MAX_TWEET_LENGTH = 280;
 
 const twitterUsernameSchema = z
     .string()
-    .min(1)
-    .max(15)
+    .min(1, "An X/Twitter Username must be at least 1 characters long")
+    .max(15, "An X/Twitter Username cannot exceed 15 characters")
     .regex(
-        /^[A-Za-z][A-Za-z0-9_]*[A-Za-z0-9]$|^[A-Za-z]$/,
-        "Invalid Twitter username format"
+        /^[A-Za-z0-9_]*$/,
+        "An X Username can only contain letters, numbers, and underscores"
     );
 
 export const twitterEnvSchema = z.object({
     TWITTER_DRY_RUN: z.boolean(),
-    TWITTER_SPACES_ENABLE: z.boolean(),
-    TWITTER_USERNAME: z.string().min(1, "Twitter username is required"),
-    TWITTER_PASSWORD: z.string().min(1, "Twitter password is required"),
-    TWITTER_EMAIL: z.string().email("Valid Twitter email is required"),
+    TWITTER_USERNAME: z.string().min(1, "X/Twitter username is required"),
+    TWITTER_PASSWORD: z.string().min(1, "X/Twitter password is required"),
+    TWITTER_EMAIL: z.string().email("Valid X/Twitter email is required"),
     MAX_TWEET_LENGTH: z.number().int().default(DEFAULT_MAX_TWEET_LENGTH),
     TWITTER_SEARCH_ENABLE: z.boolean().default(false),
     TWITTER_2FA_SECRET: z.string(),
@@ -58,6 +57,7 @@ export const twitterEnvSchema = z.object({
     ACTION_INTERVAL_MIN: z.number().int(),
     ACTION_INTERVAL_MAX: z.number().int(),
     POST_IMMEDIATELY: z.boolean(),
+    TWITTER_SPACES_ENABLE: z.boolean().default(false),
 });
 
 export type TwitterConfig = z.infer<typeof twitterEnvSchema>;
@@ -70,13 +70,7 @@ function parseTargetUsers(targetUsersStr?: string | null): string[] {
     return targetUsersStr
         .split(",")
         .map((user) => user.trim())
-        .filter(Boolean); // Remove empty usernames
-    /*
-        .filter(user => {
-            // Twitter username validation (basic example)
-            return user && /^[A-Za-z0-9_]{1,15}$/.test(user);
-        });
-        */
+        .filter(Boolean);
 }
 
 function safeParseInt(
@@ -87,7 +81,10 @@ function safeParseInt(
     const parsed = parseInt(value, 10);
     return isNaN(parsed) ? defaultValue : Math.max(1, parsed);
 }
-
+/**
+ * Validates or constructs a TwitterConfig object using zod,
+ * taking values from the IAgentRuntime or process.env as needed.
+ */
 // This also is organized to serve as a point of documentation for the client
 // most of the inputs from the framework (env/character)
 
@@ -103,10 +100,6 @@ export async function validateTwitterConfig(
                     runtime.getSetting("TWITTER_DRY_RUN") ||
                         process.env.TWITTER_DRY_RUN
                 ) ?? false, // parseBooleanFromText return null if "", map "" to false
-            TWITTER_SPACES_ENABLE: parseBooleanFromText(
-                runtime.getSetting("TWITTER_SPACES_ENABLE") ||
-                    process.env.TWITTER_SPACES_ENABLE
-            ),
             TWITTER_USERNAME:
                 runtime.getSetting("TWITTER_USERNAME") ||
                 process.env.TWITTER_USERNAME,
@@ -190,6 +183,11 @@ export async function validateTwitterConfig(
                 parseBooleanFromText(
                     runtime.getSetting("POST_IMMEDIATELY") ||
                         process.env.POST_IMMEDIATELY
+                ) ?? false,
+            TWITTER_SPACES_ENABLE:
+                parseBooleanFromText(
+                    runtime.getSetting("TWITTER_SPACES_ENABLE") ||
+                        process.env.TWITTER_SPACES_ENABLE
                 ) ?? false,
         };
 
