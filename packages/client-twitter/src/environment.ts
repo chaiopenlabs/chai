@@ -13,6 +13,7 @@ const twitterUsernameSchema = z
 
 export const twitterEnvSchema = z.object({
     TWITTER_DRY_RUN: z.boolean(),
+    TWITTER_SPACES_ENABLE: z.boolean(),
     TWITTER_USERNAME: z.string().min(1, "Twitter username is required"),
     TWITTER_PASSWORD: z.string().min(1, "Twitter password is required"),
     TWITTER_EMAIL: z.string().email("Valid Twitter email is required"),
@@ -102,6 +103,10 @@ export async function validateTwitterConfig(
                     runtime.getSetting("TWITTER_DRY_RUN") ||
                         process.env.TWITTER_DRY_RUN
                 ) ?? false, // parseBooleanFromText return null if "", map "" to false
+            TWITTER_SPACES_ENABLE: parseBooleanFromText(
+                runtime.getSetting("TWITTER_SPACES_ENABLE") ||
+                    process.env.TWITTER_SPACES_ENABLE
+            ),
             TWITTER_USERNAME:
                 runtime.getSetting("TWITTER_USERNAME") ||
                 process.env.TWITTER_USERNAME,

@@ -17,6 +17,7 @@ import {
 } from "agent-twitter-client";
 import { EventEmitter } from "events";
 import { TwitterConfig } from "./environment.ts";
+import { wait } from "./utils.ts";
 
 export function extractAnswer(text: string): string {
     const startIndex = text.indexOf("Answer: ") + 8;
@@ -213,8 +214,8 @@ export class ClientBase extends EventEmitter {
                 );
                 throw new Error("Twitter login failed after maximum retries.");
             }
-
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            // Wait between 2 and 5 seconds before retrying
+            await wait(2000, 5000);
         }
         // Initialize Twitter profile
         this.profile = await this.fetchProfile(username);

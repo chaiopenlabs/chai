@@ -119,10 +119,11 @@ export class TwitterInteractionClient {
         const twitterUsername = this.client.profile.username;
         try {
             // Check for mentions
+            const randomCount = Math.floor(Math.random() * 5) + 15;
             const mentionCandidates = (
                 await this.client.fetchSearchTweets(
                     `@${twitterUsername}`,
-                    20,
+                    randomCount,
                     SearchMode.Latest
                 )
             ).tweets;
@@ -289,6 +290,9 @@ export class TwitterInteractionClient {
 
                     // Update the last checked tweet ID after processing each tweet
                     this.client.lastCheckedTweetId = BigInt(tweet.id);
+
+                    // Sleep for a bit to avoid rate limiting
+                    await wait(2000, 8000);
                 }
             }
 

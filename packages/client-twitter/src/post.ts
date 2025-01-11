@@ -121,7 +121,7 @@ export class TwitterPostClient {
             `- Action Processing: ${this.client.twitterConfig.ENABLE_ACTION_PROCESSING ? "enabled" : "disabled"}`
         );
         elizaLogger.log(
-            `- Action Interval: ${this.client.twitterConfig.ACTION_INTERVAL} seconds`
+            `- Action Interval: Between ${this.client.twitterConfig.ACTION_INTERVAL_MIN} and ${this.client.twitterConfig.ACTION_INTERVAL_MAX} seconds`
         );
         elizaLogger.log(
             `- Post Immediately: ${this.client.twitterConfig.POST_IMMEDIATELY ? "enabled" : "disabled"}`

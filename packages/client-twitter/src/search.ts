@@ -1,5 +1,5 @@
 import { SearchMode } from "agent-twitter-client";
-import {composeContext, elizaLogger} from "@elizaos/core";
+import { composeContext, elizaLogger } from "@elizaos/core";
 import { generateMessageResponse, generateText } from "@elizaos/core";
 import { messageCompletionFooter } from "@elizaos/core";
 import {
@@ -60,8 +60,10 @@ export class TwitterSearchClient {
 
     private engageWithSearchTermsLoop() {
         this.engageWithSearchTerms().then();
-        const randomMinutes = (Math.floor(Math.random() * (120 - 60 + 1)) + 60);
-        elizaLogger.log(`Next twitter search scheduled in ${randomMinutes} minutes`);
+        const randomMinutes = Math.floor(Math.random() * (120 - 60 + 1)) + 60;
+        elizaLogger.log(
+            `Next twitter search scheduled in ${randomMinutes} minutes`
+        );
         setTimeout(
             () => this.engageWithSearchTermsLoop(),
             randomMinutes * 60 * 1000
@@ -76,11 +78,12 @@ export class TwitterSearchClient {
             ];
 
             console.log("Fetching search tweets");
-            // TODO: we wait 5 seconds here to avoid getting rate limited on startup, but we should queue
-            await new Promise((resolve) => setTimeout(resolve, 5000));
+            // TODO: updated wait to between 5-12 seconds here to avoid getting rate limited on startup, but we should queue
+            await wait(5000, 12000);
+            const randomCount = Math.floor(Math.random() * 11) + 15;
             const recentTweets = await this.client.fetchSearchTweets(
                 searchTerm,
-                20,
+                randomCount,
                 SearchMode.Top
             );
             console.log("Search tweets fetched");
