@@ -71,7 +71,7 @@ export class TwitterSearchClient {
     }
 
     private async engageWithSearchTerms() {
-        console.log("Engaging with search terms");
+        elizaLogger.log("Engaging with search terms");
         try {
             const searchTerm = [...this.runtime.character.topics][
                 Math.floor(Math.random() * this.runtime.character.topics.length)
@@ -86,7 +86,7 @@ export class TwitterSearchClient {
                 randomCount,
                 SearchMode.Top
             );
-            console.log("Search tweets fetched");
+            elizaLogger.log("Search tweets fetched");
 
             const homeTimeline = await this.client.fetchHomeTimeline(50);
 
@@ -106,7 +106,7 @@ export class TwitterSearchClient {
                 .slice(0, 20);
 
             if (slicedTweets.length === 0) {
-                console.log(
+                elizaLogger.log(
                     "No valid tweets found for the search term",
                     searchTerm
                 );
@@ -156,14 +156,15 @@ export class TwitterSearchClient {
             );
 
             if (!selectedTweet) {
-                console.log("No matching tweet found for the selected ID");
-                return console.log("Selected tweet ID:", tweetId);
+                elizaLogger.warn("No matching tweet found for the selected ID");
+                elizaLogger.log("Selected tweet ID:", tweetId);
+                return;
             }
 
-            console.log("Selected tweet to reply to:", selectedTweet?.text);
+            elizaLogger.log("Selected tweet to reply to:", selectedTweet?.text);
 
             if (selectedTweet.username === this.twitterUsername) {
-                console.log("Skipping tweet from bot itself");
+                elizaLogger.log("Skipping tweet from bot itself");
                 return;
             }
 
@@ -206,7 +207,8 @@ export class TwitterSearchClient {
             };
 
             if (!message.content.text) {
-                return { text: "", action: "IGNORE" };
+                elizaLogger.warn("Returning: No response text found");
+                return;
             }
 
             // Fetch replies and retweets
@@ -269,11 +271,11 @@ export class TwitterSearchClient {
             const response = responseContent;
 
             if (!response.text) {
-                console.log("Returning: No response text found");
+                elizaLogger.warn("Returning: No response text found");
                 return;
             }
 
-            console.log(
+            elizaLogger.log(
                 `Bot would respond to tweet ${selectedTweet.id} with: ${response.text}`
             );
             try {
